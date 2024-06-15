@@ -1,7 +1,7 @@
 # Image Colorization
 Student Name: Chen Sunbing, Chen Tianle, Nian Ziyao, Wu Jixuan
 
-Student ID: 12011118, 12012304, SID3, 12012301 
+Student ID: 12011118, 12012304, 12011925, 12012301 
 
 ## 1. Introduction
 图像上色是计算机视觉中的一个重要任务，它旨在为灰度图像自动添加逼真的颜色。这个任务不仅在学术研究中引起了广泛关注，在实际应用中也具有重要意义。例如，通过图像上色技术，我们可以为历史黑白照片上色，使它们重新焕发光彩，帮助人们更好地理解和感受历史。此外，这项技术在电影修复、图像增强和虚拟现实等领域也有广泛的应用。
@@ -58,7 +58,32 @@ Briefly introduce the metrics you would use to assess your model's performance i
 
 #### 4.4 Experimental Design & Results
 
-Explain how you design your experiments. Report your experimental results here, including a brief analysis of empirical results. You may also add visualizations of sample data.
+Model Construction
+In this work, two models are established: the generator and the critic.
+
+Generator Model
+The generator model employs a U-Net architecture, which consists of two main parts:
+1. The first part performs visual recognition.
+2. The second part outputs an image based on the content recognized by the first part.
+
+Specifically, the first part utilizes a pre-trained ResNet34 as the backbone within the U-Net architecture to identify objects in the image. The identified backbone features are then passed to the second part, which determines the color for each part of the image, ultimately producing a colored image as the output. The goal of the generator is to establish a mapping between grayscale images and colored images.
+
+Critic Model
+The critic model is a simple convolutional network based on DG-GAN. It removes batch normalization (batchnorm) and replaces the linear output layer with a convolutional layer. This model evaluates the input images and scores the appropriateness of their colors.
+
+Key Techniques
+The most crucial aspects of both models are derived from the Self-Attention GAN paper. An "attention" layer from the Self-Attention GAN is added to both models. Additionally, spectral normalization is applied to both models. The adversarial interaction between the critic and the generator is managed using the hinge loss and different learning rates as described in the Two Time-Scale Update Rule, resulting in a more stable training process. Furthermore, the attention layer significantly enhances color continuity and overall image quality.
+
+Training Process
+The training process begins with images of 64x64 resolution and gradually increases to 96x96, 128x128, 196x196, and finally 256x256. Training with images of a uniform size can lead to poor results, such as incorrect colors and overall low-quality images. However, the improvement in the model is not due to the incremental addition of larger image sizes, but rather the gradual adjustment of the learning rate during training to accommodate larger input images. This adjustment enables the model to handle larger images more efficiently.
+
+Model Variants
+Three different models are trained in this project: Artistic, Stable, and Video.
+● Artistic Model: This model tends to produce more vibrant and bold colorizations, making it suitable for artistic styles.
+● Stable Model: This model produces more realistic and stable colorizations, ideal for landscapes and portraits.
+● Video Model: This model addresses the flickering issue in video colorization, making it suitable for video content.
+
+Application :grayscale images in the /gray folder can be read and colorized using different models to produce various types of colorized images. A frontend web interface is used to automatically store the output results in the /result_images folder, with the same names as the original images.
 
 
 ## 5. Conclusion
